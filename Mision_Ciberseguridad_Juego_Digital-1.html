@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misión Ciberseguridad</title>
+<style>
+:root{--navy:#10233f;--blue:#246bce;--cyan:#27c5d8;--bg:#eef5ff;--ink:#17243a}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(145deg,#0d1c35,#174b78 60%,#137b91);min-height:100vh;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:18px}
+.app{width:min(720px,100%);background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px #06152b66}
+header{padding:25px 25px 20px;background:linear-gradient(120deg,#122b4c,#176b91);color:#fff;text-align:center}
+.logo{font-size:34px}h1{margin:7px 0 4px;font-size:clamp(24px,5vw,34px);letter-spacing:.3px}.sub{opacity:.88;font-size:14px}
+main{padding:24px}
+.panel{display:none}.panel.active{display:block}
+.intro{text-align:center}.intro p{line-height:1.6;color:#53647a}
+input[type=text]{width:100%;padding:15px;border:2px solid #d7e3f1;border-radius:12px;font-size:16px;margin:12px 0 16px}
+button{border:0;border-radius:12px;padding:14px 18px;font-weight:750;font-size:16px;cursor:pointer;transition:.15s}
+.primary{background:var(--blue);color:white;width:100%}.primary:hover{background:#1756ad}
+.option{display:block;width:100%;text-align:left;background:#f1f6fc;color:#21334b;border:2px solid #e1eaf5;margin:10px 0;padding:14px 15px}
+.option:hover:not(:disabled){border-color:#5a9be8;background:#eaf3ff}
+.option:disabled{cursor:default;opacity:1}
+.option.correct{background:#e5f8ef;border-color:#21a36b;color:#11613e}
+.option.wrong{background:#fff0ed;border-color:#e16b58;color:#91382d}
+.meta{display:flex;justify-content:space-between;gap:12px;color:#5c6d82;font-size:14px;font-weight:650;margin-bottom:12px}
+.track{height:9px;background:#e7eef7;border-radius:20px;overflow:hidden;margin-bottom:22px}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .25s}
+h2{font-size:22px;line-height:1.35;margin:0 0 18px;color:#142c4c}
+.feedback{min-height:25px;font-weight:700;margin:12px 0;color:#176b91}
+.score{font-size:54px;font-weight:850;color:#176b91;text-align:center;margin:10px 0}
+.result{text-align:center}.result p{line-height:1.6;color:#53647a}
+.small{font-size:12px;color:#718096;text-align:center;margin-top:18px}
+@media(max-width:480px){main{padding:19px}header{padding:22px 16px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">🛡️💻</div><h1>MISIÓN CIBERSEGURIDAD</h1><div class="sub">Reto digital · Pon a prueba tus conocimientos</div></header>
+<main>
+<section id="start" class="panel active intro">
+<h2>¿Estás listo para el reto?</h2>
+<p>Responde 10 preguntas sobre delitos cibernéticos. Cada respuesta correcta vale <b>10 puntos</b>. Al final conocerás tu resultado.</p>
+<label for="player"><b>Escribe tu nombre:</b></label>
+<input id="player" type="text" maxlength="24" placeholder="Tu nombre" autocomplete="name">
+<button class="primary" id="begin">COMENZAR JUEGO 🚀</button>
+<p class="small">Puedes jugar desde celular, tablet o computadora.</p>
+</section>
+<section id="quiz" class="panel">
+<div class="meta"><span id="counter">Pregunta 1 de 10</span><span id="points">Puntos: 0</span></div>
+<div class="track"><div class="fill" id="progress"></div></div>
+<h2 id="question"></h2>
+<div id="answers"></div>
+<div class="feedback" id="feedback" aria-live="polite"></div>
+<button class="primary" id="next" style="display:none">SIGUIENTE ➜</button>
+</section>
+<section id="end" class="panel result">
+<div class="logo">🏆</div><h2 id="greeting">¡Reto completado!</h2>
+<div class="score" id="finalScore">0/100</div>
+<p id="message"></p>
+<button class="primary" id="again">VOLVER A JUGAR</button>
+<button id="share" style="width:100%;margin-top:10px;background:#eaf3ff;color:#1756ad">COMPARTIR MI RESULTADO</button>
+<p class="small">La puntuación se calcula en este dispositivo. Para comparar resultados, cada jugador puede compartir su puntuación.</p>
+</section>
+</main>
+</div>
+<script>
+const questions=[
+{q:"¿Qué son los delitos cibernéticos?",a:["Conductas ilícitas que utilizan tecnologías digitales.","Juegos que se descargan de internet.","Errores comunes de una computadora.","Actividades escolares en línea."],c:0,why:"Son conductas ilícitas realizadas mediante sistemas o tecnologías digitales."},
+{q:"¿Qué es el phishing?",a:["Un programa para editar fotografías.","Un engaño para obtener datos personales.","Una forma de mejorar la señal de internet.","Un videojuego en línea."],c:1,why:"El phishing usa mensajes o sitios engañosos para intentar robar información."},
+{q:"¿Qué es el fraude electrónico?",a:["Actualizar una aplicación.","Compartir información escolar.","Engañar para obtener dinero por medios digitales.","Crear una cuenta de correo."],c:2,why:"Consiste en utilizar medios electrónicos para engañar y obtener un beneficio indebido."},
+{q:"¿Qué significa acceso ilícito a un sistema?",a:["Entrar sin autorización a un sistema o cuenta.","Cerrar correctamente una sesión.","Instalar una aplicación oficial.","Cambiar la imagen de perfil."],c:0,why:"El acceso ilícito ocurre cuando alguien entra sin permiso a un sistema."},
+{q:"¿Qué es la extorsión digital?",a:["Enviar una invitación por mensaje.","Amenazar por medios digitales para exigir dinero o algún beneficio.","Compartir una noticia.","Recibir una actualización."],c:1,why:"Se utilizan amenazas por medios digitales para exigir algo a la víctima."},
+{q:"¿Qué busca proteger la privacidad digital?",a:["La velocidad de conexión.","El diseño de una página web.","La información personal de las personas.","El nivel de batería."],c:2,why:"La privacidad digital protege los datos y la información personal."},
+{q:"¿Qué institución investiga delitos del fuero federal en México?",a:["SEP.","FGR.","INE.","IMSS."],c:1,why:"La Fiscalía General de la República investiga delitos del orden federal."},
+{q:"Si eres víctima de un delito cibernético, ¿qué es recomendable hacer?",a:["Borrar todas las conversaciones.","Compartir tus contraseñas.","Ignorarlo.","Conservar evidencias y denunciar ante la autoridad correspondiente."],c:3,why:"Conservar mensajes, capturas y otros datos puede ayudar al presentar una denuncia."},
+{q:"¿Qué medida ayuda a proteger tus cuentas?",a:["Usar la misma contraseña en todos lados.","Compartir tus claves con amigos.","Activar la verificación en dos pasos.","Elegir contraseñas muy sencillas."],c:2,why:"La verificación en dos pasos agrega una capa adicional de seguridad."},
+{q:"¿Qué es el ciberacoso?",a:["Aprender mediante cursos en línea.","Acosar, hostigar o intimidar a alguien mediante medios digitales.","Realizar una videollamada.","Jugar en internet con amigos."],c:1,why:"El ciberacoso utiliza plataformas o medios digitales para hostigar o intimidar."}
+];
+let index=0,score=0,player="";let locked=false;
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));$(id).classList.add("active")}
+$("begin").addEventListener("click",()=>{player=$("player").value.trim()||"Participante";index=0;score=0;show("quiz");render()});
+$("player").addEventListener("keydown",e=>{if(e.key==="Enter")$("begin").click()});
+function render(){
+ locked=false;const item=questions[index];
+ $("counter").textContent=`Pregunta ${index+1} de ${questions.length}`;
+ $("points").textContent=`Puntos: ${score}`;
+ $("progress").style.width=`${index/questions.length*100}%`;
+ $("question").textContent=item.q;$("feedback").textContent="";$("next").style.display="none";
+ $("answers").innerHTML="";
+ item.a.forEach((answer,i)=>{const b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+i)+") "+answer;b.addEventListener("click",()=>choose(i));$("answers").appendChild(b)});
+}
+function choose(choice){
+ if(locked)return;locked=true;const item=questions[index];const buttons=[...$("answers").children];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add("correct");if(i===choice&&choice!==item.c)b.classList.add("wrong")});
+ if(choice===item.c){score+=10;$("feedback").textContent="¡Correcto! +10 puntos. "+item.why}else{$("feedback").textContent="No es correcto. "+item.why}
+ $("points").textContent=`Puntos: ${score}`;$("next").textContent=index===questions.length-1?"VER RESULTADO 🏆":"SIGUIENTE ➜";$("next").style.display="block";
+}
+$("next").addEventListener("click",()=>{index++;if(index<questions.length)render();else finish()});
+function finish(){
+ show("end");$("progress").style.width="100%";$("greeting").textContent=`¡Buen trabajo, ${player}!`;$("finalScore").textContent=`${score}/100`;
+ let msg=score===100?"¡Excelente! Dominas todos los temas.":score>=70?"¡Muy bien! Tienes buenos conocimientos de ciberseguridad.":score>=50?"¡Buen intento! Repasa los temas y vuelve a intentarlo.":"¡Sigue practicando! Cada intento te ayuda a aprender.";
+ $("message").textContent=msg;
+}
+$("again").addEventListener("click",()=>{index=0;score=0;show("start")});
+$("share").addEventListener("click",async()=>{const text=`🎮 MISIÓN CIBERSEGURIDAD\nJugador: ${player}\nPuntuación: ${score}/100`;try{if(navigator.share)await navigator.share({title:"Mi resultado",text});else if(navigator.clipboard){await navigator.clipboard.writeText(text);$("share").textContent="¡RESULTADO COPIADO!";}else window.prompt("Copia tu resultado:",text)}catch(e){}});
+</script>
+</body>
+</html>
